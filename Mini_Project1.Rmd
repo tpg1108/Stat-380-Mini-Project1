@@ -1,19 +1,25 @@
 ---
 title: "Stat380_MiniProject1"
-author: "Tyler Gilbert, Ethan Martin"
+author: "Tyler Gilbert, Ethan Martin, Sean Lydon, Tim Damasco"
 date: "2026-02-23"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-# install.packages("readxl")
+## Question 1
+```{r}
 library(readxl)
-library(ggplot2)
-library(tidyr)
+codRaw <- read_xlsx('CODGames2_mp.xlsx')
 library(dplyr)
+library(ggplot2)
+library(tidyverse)
+
 ```
 
+We used ChatGPt to find the code. The entry was "r code to read xlsx file" and the output was "install.packages("readxl"), library(readxl), data <- read_xlsx("your_file.xlsx")." This is how we found the packages for reading .xlsx files. 
+
+
+## Question 2
+Completed by Ethan Martin
 
 ```{r part2-WeaponPlot}
 # Variable 1 -- Primary Weapon (categorical)
@@ -36,6 +42,7 @@ weaponPlot
 
 round(prop.table(table(codRaw$`PrimaryWeapon`)) * 100, 2)
 ```
+
 Here the variable we are looking at is called "PrimaryWeapon" and it is categorical, meaning it takes in different types of weapons as its value, and does not have any missing values. From the plot it looks like the most frequently selected weapons are the M16 with 48 total instances (22.75%), MP5 with 45 instances (21.33), and the Pelington 703 with 38 instances (18.01%). We do have a few outliers as well on the low end with the AK-47, FFAR 1, and MG 82 all with 4, 3, and 2 (1.90%, 1.42%, 0.95%) instances respectively.
 
 ```{r part2-GamePlot}
@@ -99,6 +106,7 @@ xpPlot
 
 summary(codRaw$TotalXP)
 ```
+
 Here based on the visualization, total XP is a quantitative variable with a median clustering around 9 or 10 thousand and more outliers on the upper part of the plot than the lower part. The summary table satates that median score is 10,328 and the mean is 11,975 with maximums reaching all the way into the 40,000s (43,816 exact max). Some may say that score and XP are almost the same but theres a few things that differ from the two categories. Score is a general ruling of how the player performed in a match. XP, on the other hand, is calculated with more of a "boost", incooporating the XPType column, which adds a set pecentage boost to the amount of XP earned in a match. XP and player score are also calculated differently based off of in-game actions. For example an action like "completing a quest" may add XP, but not a score to the team death match or a domination match, while securing a kill/elimination may add to both XP and player score. There also arent any missing values in this set, as XP is gained every round, even if 0 is recorded.
 
 ```{r part2-ResultPlot}
@@ -134,3 +142,25 @@ ggplot(binaryResult, aes(x = GameOutcome)) +
 round(prop.table(table(binaryResult$GameOutcome)) * 100, 2)
 ```
 The last visualization here is on the categorical variable of the "Result" column, which states the player team's score vs. the opposing team's score. An example like 100-79 would read (player team = 100, opposing team = 79) and result in a "Win" for the player. I had to mutate this section a little bit to be able to categorize these as Win/Loss/Tie instead of the raw numbers, so when FirstNumber > SecondNumber that is a player win. When FirstNumber < SecondNumber, that is a loss, and when they are equal, the game is a tie. Compared to some earlier categorical visualizations, these categories are relatively close to each other, with the wins and losses being 114 and 94 respectively. There are also 3 ties as well. There aren't any missing values in this table because in order for the game to run, it must end with a set score.
+
+## Question 3
+
+
+## Question 4
+
+### Part 1
+Completed by Sean Lydon
+
+```{r}
+library(lubridate)
+month <- month(codRaw$Date, label = TRUE, abbr = FALSE)
+month
+
+ggplot(codRaw, aes(x = month, y = TotalXP)) +
+  geom_boxplot() +
+  labs(x = "Month", y = "Total XP")
+```
+
+The player's performance (disregarding outliers) is not changing over time. We see that the interquartile range of the TotalXP variable stays relatively the same over these three months, indicating little change over the three month span we are evaluating. 
+
+### Part 2
