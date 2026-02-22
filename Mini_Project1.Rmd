@@ -1,12 +1,17 @@
 ---
 title: "Stat380_MiniProject1"
-author: "Tyler Gilbert"
-date: "2026-02-19"
+author: "Tyler Gilbert, Ethan Martin"
+date: "2026-02-23"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+# install.packages("readxl")
+library(readxl)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
 ```
 
 ## R Markdown
@@ -15,8 +20,8 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
+```{r data}
+codRaw <- read_excel("~/Downloads/CODGames2_mp.xlsx")
 ```
 
 ## Including Plots
@@ -28,3 +33,124 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+```{r part2-WeaponPlot}
+# Variable 1 -- Primary Weapon (categorical)
+weaponPlot <- ggplot(codRaw, aes(x = PrimaryWeapon)) +
+  geom_bar(fill = "steelblue", color = "black") + 
+  labs(
+    title = "Distribution of Primary Weapon",
+    x = "Primary Weapon",
+    y = "Count"
+  ) + 
+  theme_minimal() + 
+  geom_text(stat = "count",
+            aes(label = ..count..),
+            vjust = -0.5) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.1))) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+weaponPlot
+
+# Weapon proportions
+
+round(prop.table(table(codRaw$`PrimaryWeapon`)) * 100, 2)
+```
+# Here the variable we are looking at is called "PrimaryWeapon" and it is categorical, meaning it takes in different types of weapons as its value, and does not have any missing values. From the plot it looks like the most frequently selected weapons are the M16 with 48 total instances (22.75%), MP5 with 45 instances (21.33), and the Pelington 703 with 38 instances (18.01%). We do have a few outliers as well on the low end with the AK-47, FFAR 1, and MG 82 all with 4, 3, and 2 (1.90%, 1.42%, 0.95%) instances respectively.
+
+```{r part2-GamePlot}
+# Variable 2 -- Game Type (categorical)
+
+gamePlot <- ggplot(codRaw, aes(x = GameType)) +
+  geom_bar(fill = "steelblue", color = "black") + 
+  labs(
+    title = "Distribution of Game Type",
+    x = "Game Type",
+    y = "Count"
+  ) + 
+  theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+gamePlot
+
+# Game proportions
+
+round(prop.table(table(codRaw$GameType)) * 100, 2)
+```
+
+# Here, the variable we are looking at is the "GameType" variable and is also categorical. This variable just identifies the type of match the player is participating in with "HC - TDM" (Team Death Match) being the most common appearance, accounting for 93.36% of all observations in the GameType column. This means the player could have had a team he played with, or at least a set of common players with whom these team death matches could have been played. But that is just a guess based off of little information. No missing data here, each and every game played must have a type associated with it.
+
+```{r part2-ScorePlot}
+# Variable 3 -- Score (quantitative)
+
+scorePlot <- ggplot(codRaw, aes(x = Score)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "black") +
+  labs(
+    title = "Distribution of Scores",
+    x = "Score",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+scorePlot
+
+# Summary of Scores
+
+summary(codRaw$Score)
+```
+
+# Here we have the distribution of scores. This is a quantitative variable so we have a summary table to help us gain some insight from the dataset. Based on the visualization alone we can see a median clusteriing around 2500 with outliers sitting at 100 and 6000+. Based on the summary table we can see that the median score is 2770 and average score throughout all games played is 2945. This variable, score, is directly related to other variables in the dataset like game outcome and eliminations, however this is  univariate data exploration, so we are just evaluating score. No missing data in the score section.
+
+```{r part2-XPPlot}
+# Variable 4 -- Total XP (quantitative)
+
+xpPlot <- ggplot(codRaw, aes(x = TotalXP)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "black") +
+  scale_x_continuous(
+    labels = function(x) x / 1000
+  ) + 
+  labs(
+    title = "Distribution of Total XP Gained per Match",
+    x = "Score (in thousands)",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+xpPlot
+
+# Summary of XP
+
+summary(codRaw$TotalXP)
+```
+# Here based on the visualization, total XP is a quantitative variable with a median clustering around 9 or 10 thousand and more outliers on the upper part of the plot than the lower part. The summary table satates that median score is 10,328 and the mean is 11,975 with maximums reaching all the way into the 40,000s (43,816 exact max). Some may say that score and XP are almost the same but theres a few things that differ from the two categories. Score is a general ruling of how the player performed in a match. XP, on the other hand, is calculated with more of a "boost", incooporating the XPType column, which adds a set pecentage boost to the amount of XP earned in a match. XP and player score are also calculated differently based off of in-game actions. For example an action like "completing a quest" may add XP, but not a score to the team death match or a domination match, while securing a kill/elimination may add to both XP and player score. There also arent any missing values in this set, as XP is gained every round, even if 0 is recorded.
+
+```{r part2-ResultPlot}
+# Variable 5 -- Result (binary)
+
+# Mutation for categorical classifier
+binaryResult <- codRaw %>%
+  separate(Result, into = c("TeamScore", "OpponentScore"), sep = "-", convert = TRUE)
+binaryResult <- binaryResult %>%
+  mutate(GameOutcome = case_when(
+    TeamScore > OpponentScore ~ "Win",
+    TeamScore < OpponentScore ~ "Loss",
+    TeamScore == OpponentScore ~ "Tie"
+  ))
+binaryResult$GameOutcome <- as.factor(binaryResult$GameOutcome)
+
+# Plot
+ggplot(binaryResult, aes(x = GameOutcome)) +
+  geom_bar(fill = "steelblue", color = "black") +
+  geom_text(stat = "count",
+            aes(label = ..count..),
+            vjust = -0.5) +
+  labs(
+    title = "Game Outcomes",
+    x = "Outcome",
+    y = "Count"
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) +
+  theme_minimal()
+
+# Outcome Proportions
+
+round(prop.table(table(binaryResult$GameOutcome)) * 100, 2)
+```
+# The last visualization here is on the categorical variable of the "Result" column, which states the player team's score vs. the opposing team's score. An example like 100-79 would read (player team = 100, opposing team = 79) and result in a "Win" for the player. I had to mutate this section a little bit to be able to categorize these as Win/Loss/Tie instead of the raw numbers, so when FirstNumber > SecondNumber that is a player win. When FirstNumber < SecondNumber, that is a loss, and when they are equal, the game is a tie. Compared to some earlier categorical visualizations, these categories are relatively close to each other, with the wins and losses being 114 and 94 respectively. There are also 3 ties as well. There aren't any missing values in this table because in order for the game to run, it must end with a set score.
