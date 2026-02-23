@@ -144,7 +144,16 @@ round(prop.table(table(binaryResult$GameOutcome)) * 100, 2)
 The last visualization here is on the categorical variable of the "Result" column, which states the player team's score vs. the opposing team's score. An example like 100-79 would read (player team = 100, opposing team = 79) and result in a "Win" for the player. I had to mutate this section a little bit to be able to categorize these as Win/Loss/Tie instead of the raw numbers, so when FirstNumber > SecondNumber that is a player win. When FirstNumber < SecondNumber, that is a loss, and when they are equal, the game is a tie. Compared to some earlier categorical visualizations, these categories are relatively close to each other, with the wins and losses being 114 and 94 respectively. There are also 3 ties as well. There aren't any missing values in this table because in order for the game to run, it must end with a set score.
 
 ## Question 3
+Completed by Tim Damasco
 
+### 1st Question
+What exactly does the “Result” variable represent? Is this the final team score (e.g., 100–97), and is the first number always the player’s team?
+
+### 2nd Question
+Were there any game updates or balancing patches during this time? Changes to XP rewards or weapon performance could affect trends.
+
+### 3rd Question
+Are different Game Types comparable in terms of XP and scoring? For example, does Hardpoint award XP differently than TDM?
 
 ## Question 4
 
