@@ -173,3 +173,22 @@ ggplot(codRaw, aes(x = month, y = TotalXP)) +
 The player's performance (disregarding outliers) is not changing over time. We see that the interquartile range of the TotalXP variable stays relatively the same over these three months, indicating little change over the three month span we are evaluating. 
 
 ### Part 2
+
+Competed by Tim Damasco
+
+Is there a relationship between the number of Eliminations and the amount of TotalXP earned in a match?
+
+```{r}
+ggplot(codRaw, aes(x = Eliminations, y = TotalXP)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(
+    title = "Relationship Between Eliminations and TotalXP",
+    x = "Number of Eliminations",
+    y = "Total Experience Points (TotalXP)"
+  )
+
+cor(codRaw$Eliminations, codRaw$TotalXP, use = "complete.obs")
+```
+
+The scatterplot shows a positive relationship between Eliminations and TotalXP. As the number of eliminations increases, TotalXP generally increases as well. The upward-sloping regression line further supports this trend. The correlation between Eliminations and TotalXP is r = 0.512, which indicates a moderate positive association. While the relationship is not extremely strong and there is noticeable variability in TotalXP at similar elimination counts, the overall pattern suggests that matches with more eliminations tend to result in higher experience points earned. This suggests that eliminations contribute meaningfully to TotalXP, but other factors such as game type, match outcome, or XP bonuses likely also influence experience gained.
