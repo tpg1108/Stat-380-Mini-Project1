@@ -174,21 +174,13 @@ The player's performance (disregarding outliers) is not changing over time. We s
 
 ### Part 2
 
-Competed by Tim Damasco
-
-Is there a relationship between the number of Eliminations and the amount of TotalXP earned in a match?
-
+Completed by Tyler Gilbert
+Question: Is there a significant difference in Total XP when using Double XP compared to using the 10% boost? 
 ```{r}
-ggplot(codRaw, aes(x = Eliminations, y = TotalXP)) +
-  geom_point(alpha = 0.6) +
-  geom_smooth(method = "lm", se = FALSE, color = "red") +
-  labs(
-    title = "Relationship Between Eliminations and TotalXP",
-    x = "Number of Eliminations",
-    y = "Total Experience Points (TotalXP)"
-  )
-
-cor(codRaw$Eliminations, codRaw$TotalXP, use = "complete.obs")
+ggplot(CODGames, aes(x = XPType, y = TotalXP)) +
+  geom_boxplot() +
+  labs(title = "Total XP by XP Type",
+       x = "XP Type",
+       y = "Total XP")
 ```
-
-The scatterplot shows a positive relationship between Eliminations and TotalXP. As the number of eliminations increases, TotalXP generally increases as well. The upward-sloping regression line further supports this trend. The correlation between Eliminations and TotalXP is r = 0.512, which indicates a moderate positive association. While the relationship is not extremely strong and there is noticeable variability in TotalXP at similar elimination counts, the overall pattern suggests that matches with more eliminations tend to result in higher experience points earned. This suggests that eliminations contribute meaningfully to TotalXP, but other factors such as game type, match outcome, or XP bonuses likely also influence experience gained.
+There is a clear difference in the average for total XP gained per player when using the 10% boost as opposed to using the Double XP as the data shows that the XP types are either just the 10% boost, or Double XP and the 10% boost, which combines the two ways to gain XP. This being the case, it is clear that there will be a difference, and we wanted to know how significant the difference in total XP gained is, and there is a significant enough difference that we can conclude every player that has the ability to Double their XP, should do it as there are siginificant benefits to using it.
